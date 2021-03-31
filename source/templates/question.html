@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% block content %}
+  <article class="media content-section">
+    <ul>
+
+    {% if current_user.has_voted_question(question) %}
+      <a href="{{ url_for('vote_action', question_id=question.id, action='unvote') }}">Unvote</a>
+    {% else %}
+      <a href="{{ url_for('vote_action', question_id=question.id, action='vote') }}">vote</a>
+    {% endif %}
+    <div class="text-center"><span class="label label-primary">{{ question.votes.count()}} vote</span></div>
+    
+  </ul>
+    <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/'+ question.author.user_image) }}">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="#">{{ question.author.user_username }}</a>
+        <small class="text-muted">{{ question.q_datecreate.strftime('%Y-%m-%d') }}</small>
+        {% if question.author == current_user %}
+          <div>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_question', question_id=question.id) }}">Update</a>
+            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
+          </div>
+        {% endif %}
+      </div>
+      <h2 class="article-title">{{ question.q_title }}</h2>
+      <p class="article-content">{{ question.q_body }}</p>
+      <div class="text-right">
+        <ul>
+
+            <a href="{{ url_for('question', question_id=question.id) }}#comments">
+              <span class="label label-primary">{{ question.comments.count() }} Comments</span>
+          </a>
+        </ul>
+
+    </div>
+    </div>
+    
+  </article>
+
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Question?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="{{ url_for('delete_question', question_id=question.id) }}" method="POST">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% include 'addcomment.html' %}
+<ul class="comments">
+  {% for comment in comments %}
+  <article class="row">
+    <div class="col-md-2 col-sm-2 hidden-xs">
+      <figure class="thumbnail">
+        <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/'+ question.author.user_image) }}">
+        
+      </figure>
+    </div>
+    <div class="col-md-10 col-sm-10">
+      <div class="panel panel-default arrow left">
+        <div class="panel-body">
+          <header class="text-left">
+            <div class="comment-user"><i class="fa fa-user"></i> {{ comment.article_author.user_username}}</div>
+            <time class="comment-date" datetime="16-12-2014 01:05"><i class="fa fa-clock-o"></i>{{ comment.cm_datecreate.strftime('%Y-%m-%d') }}</time>
+          </header>
+          <div class="comment-post">
+            <p>
+              {{ comment.cm_body }}
+            </p>
+          </div>
+          <p class="text-right"><a href="#" class="btn btn-default btn-sm"><i class="fa fa-reply"></i> reply</a></p>
+        </div>
+      </div>
+    </div>
+  </article>
+   
+  {% endfor %}
+</ul>
+
+{% endblock content %}

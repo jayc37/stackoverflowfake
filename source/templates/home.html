@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for question in questions %}
+    
+        <article class="media content-section">
+          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + question.author.user_image) }}">
+          
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ question.author.username }}</a>
+              <small class="text-muted">{{ question.q_datecreate }}</small>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('question', question_id=question.id) }}">{{ question.q_title }}</a></h2>
+            <p class="article-content">{{ question.q_body }}</p>
+            <div class="text-right">
+              <a>
+                <span class="label label-primary">{{ question.votes.count() }} Vote</span>
+            </a>
+              <a href="{{ url_for('question', question_id=question.id) }}#comments">
+                  <span class="label label-primary">{{question.comments.count()}} Comments</span>
+              </a>
+             
+          </div>
+          </div>
+          
+        </article>
+    {% endfor %}
+{% endblock content %}
